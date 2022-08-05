@@ -23,8 +23,8 @@ services:
       - server_net
     working_dir: /app
     extra_hosts:
-      - "www.test.test:127.0.0.1"
-      - "test.test:127.0.0.1"
+      - "www.site.test:127.0.0.1"
+      - "site.test:127.0.0.1"
     volumes:
       - ./app:/app:delegated
   db:
