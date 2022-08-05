@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  server:
+    container_name: server
+    build:
+      context: ./build/local
+      dockerfile: Dockerfile_nginx
+    ports:
+      - "8001:80"
+    volumes:
+      - ./app/public:/app/public
+    networks:
+      - server_net
+    depends_on:
+      - app
+  app:
+    container_name: app
+    build:
+      context: ./build/local
+      dockerfile: Dockerfile_php
+    networks:
+      - server_net
+    working_dir: /app
+    extra_hosts:
+      - "www.test.test:127.0.0.1"
+      - "test.test:127.0.0.1"
+    volumes:
+      - ./app:/app:delegated
+  db:
+    image: mysql:8.0.23
+    container_name: db
+    depends_on:
+      - app
+      - server
+    networks:
+      - server_net
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=testdb
+      - MYSQL_USER=secret
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
+    ports:
+      - "7001:3306"
+volumes:
+  db:
+    driver: local
+
+networks:
+  server_net:
+    driver: bridge
